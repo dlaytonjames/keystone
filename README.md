@@ -1,2 +1,2 @@
 # keystone
-A crypto helper library for Go.
+A Go library for common PKI uses.
