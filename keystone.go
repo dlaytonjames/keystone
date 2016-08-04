@@ -239,18 +239,24 @@ func GetTrustedCAs(filename string) *x509.CertPool {
 	return certPool
 }
 
-func getCert(input []byte) (*x509.Certificate, error) {
+// GetCert returns a pointer to an x509 certificate and a nil error unless an error
+// is encountered.
+func GetCert(input []byte) (*x509.Certificate, error) {
 	var cert *x509.Certificate
 	if len(input) == 0 {
-		err := errors.New("Error parsing certificate")
+		err := errors.New("input empty")
 		return cert, err
 	}
 	certPEM, _ := pem.Decode(input)
+	if certPEM == nil {
+		err := errors.New("error parsing certificate")
+		return cert, err
+	}
 	cert, err := x509.ParseCertificate(certPEM.Bytes)
 	if err != nil {
 		return cert, err
 	}
-	return cert, err
+	return cert, nil
 }
 
 func getCertPool(certs []string) (*x509.CertPool, error) {
@@ -313,7 +319,6 @@ func CheckRevoked(serial *big.Int, crl *pkix.CertificateList) error {
 }
 
 func crlRevCheck(certChain []*x509.Certificate) (Warning, error) {
-	var err error
 	var warn Warning
 	var warnDetails string
 	var passedChecks int
@@ -366,10 +371,13 @@ func crlRevCheck(certChain []*x509.Certificate) (Warning, error) {
 			passedChecks++
 		}
 	}
+
 	if warn != nil {
 		warn = errors.New(warnDetails)
+		return warn, nil
 	}
-	return warn, err
+
+	return nil, nil
 }
 
 // GetOCSPInfo is used to get OCSP response details from []byte containing the response. The
@@ -394,5 +402,6 @@ func GetOCSPInfo(ocspBytes []byte) (OCSPInfo, error) {
 	case ocsp.Unknown:
 		ocspInfo.Status = "Unknown"
 	}
+
 	return *ocspInfo, err
 }
