@@ -1,0 +1,11 @@
+{
+	"ImportPath": "github.com/spazbite187/keystone",
+	"GoVersion": "go1.7",
+	"GodepVersion": "v79",
+	"Deps": [
+		{
+			"ImportPath": "golang.org/x/crypto/ocsp",
+			"Rev": "bed12803fa9663d7aa2c2346b0c634ad2dcd43b7"
+		}
+	]
+}
